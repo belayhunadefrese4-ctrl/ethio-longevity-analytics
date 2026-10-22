@@ -1,0 +1,21 @@
+[theme]
+# Primary Emerald Health Brand Color (Active tabs, buttons, highlights)
+primaryColor = "#008060"
+
+# Main Page Background (Executive White)
+backgroundColor = "#FFFFFF"
+
+# Container & Sidebar Background
+secondaryBackgroundColor = "#F4F7F6"
+
+# Main Text Color
+textColor = "#111827"
+
+# Font Family
+font = "sans serif"
+
+[server]
+headless = true
+
+[browser]
+gatherUsageStats = false
