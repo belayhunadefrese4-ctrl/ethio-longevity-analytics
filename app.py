@@ -274,33 +274,32 @@ with tab2:
         )
 
 # ==========================================
-# 5. TAB 3: REMITTANCE & PAYMENTS
+# TAB 3: REMITTANCE & PAYMENTS
 # ==========================================
 with tab3:
     st.header(T["tab3"])
     p1, p2 = st.columns(2)
     
     with p1:
-        st.subheader("💚 Global Payment & Remittance Methods")
+        st.subheader("💚 Global Payment & Remittance Instructions")
         curr = st.radio("Select Currency", ["ETB (ብር)", "USD ($)", "EUR (€)", "GBP (£)"])
         
-        # 🟢 የገንዘቡን መጠን ማስገቢያ (Amount Input Field)
         if curr == "ETB (ብር)":
             amt = st.number_input("Amount (Min 20 ETB) / መጠን", min_value=20, value=200, step=10)
-        elif curr == "USD ($)":
-            amt = st.number_input("Amount (Min $3 USD) / መጠን", min_value=3, value=10, step=1)
-        elif curr == "EUR (€)":
-            amt = st.number_input("Amount (Min €3 EUR) / መጠን", min_value=3, value=10, step=1)
-        else: # GBP (£)
-            amt = st.number_input("Amount (Min £3 GBP) / መጠን", min_value=3, value=10, step=1)
+        else:
+            amt = st.number_input(f"Amount (Min 3 {curr[:3]}) / መጠን", min_value=3, value=10, step=1)
             
         st.info(
-            "**📲 Mobile Money / International Remittance (Sendwave, Remitly, WorldRemit):**\n"
+            "**📲 Mobile Money / Remittance (Sendwave, Remitly, WorldRemit):**\n"
             "* Recipient Phone: `+251986884912`\n"
-            "* Name: **Belayhun Adefrese**\n\n"
-            "**🏦 Direct Bank Transfer (Commercial Bank of Ethiopia - CBE):**\n"
-            "* Account Number: `1000296269488`\n"
-            "* Name: **Belayhun Adefrese Metaferia** (Lem Area Branch, Addis Ababa)"
+            "* Recipient Name: **Belayhun Adefrese**\n\n"
+            "**🏦 Commercial Bank of Ethiopia (CBE Direct):**\n"
+            "* Account: `1000296269488` (Belayhun Adefrese Metaferia)\n\n"
+            "**📋 How to Get Your Unlock Key:**\n"
+            "1. Complete payment on your provider app (Sendwave/Remitly/CBE).\n"
+            "2. Copy the **Transaction Reference / MTCN / Confirmation Code** from your payment receipt.\n"
+            "3. Paste the code below and submit your claim.\n"
+            "4. Your single-use SMS Access Key will be dispatched to your phone!"
         )
         
         c_name = st.text_input("Sender Full Name")
@@ -308,7 +307,7 @@ with tab3:
         
         if st.button("📩 Submit Verification Claim", type="primary"):
             if len(c_ref.strip()) >= 5:
-                st.success(f"✅ Claim logged for {amt} {curr[:3]}! Your access key will be sent via SMS.")
+                st.success(f"✅ Claim logged for {amt} {curr[:3]}! Your access key will be verified and sent via SMS.")
             else:
                 st.error("❌ Enter a valid transaction reference code.")
 
