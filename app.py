@@ -284,6 +284,16 @@ with tab3:
         st.subheader("💚 Global Payment & Remittance Methods")
         curr = st.radio("Select Currency", ["ETB (ብር)", "USD ($)", "EUR (€)", "GBP (£)"])
         
+        # 🟢 የገንዘቡን መጠን ማስገቢያ (Amount Input Field)
+        if curr == "ETB (ብር)":
+            amt = st.number_input("Amount (Min 20 ETB) / መጠን", min_value=20, value=200, step=10)
+        elif curr == "USD ($)":
+            amt = st.number_input("Amount (Min $3 USD) / መጠን", min_value=3, value=10, step=1)
+        elif curr == "EUR (€)":
+            amt = st.number_input("Amount (Min €3 EUR) / መጠን", min_value=3, value=10, step=1)
+        else: # GBP (£)
+            amt = st.number_input("Amount (Min £3 GBP) / መጠን", min_value=3, value=10, step=1)
+            
         st.info(
             "**📲 Mobile Money / International Remittance (Sendwave, Remitly, WorldRemit):**\n"
             "* Recipient Phone: `+251986884912`\n"
@@ -295,9 +305,10 @@ with tab3:
         
         c_name = st.text_input("Sender Full Name")
         c_ref = st.text_input("Transaction Ref / MTCN / Confirmation Code")
+        
         if st.button("📩 Submit Verification Claim", type="primary"):
             if len(c_ref.strip()) >= 5:
-                st.success("✅ Payment claim logged! Your single-use access key will be sent via SMS.")
+                st.success(f"✅ Claim logged for {amt} {curr[:3]}! Your access key will be sent via SMS.")
             else:
                 st.error("❌ Enter a valid transaction reference code.")
 
