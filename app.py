@@ -529,3 +529,5 @@ with tab4:
         if st.button("📲 Generate & Dispatch Key"):
             gen_key = f"GLOB-{''.join(random.choices(string.ascii_uppercase + string.digits, k=8))}"
             st.info(f"Generated Key: **{gen_key}** dispatched to **{target_phone}**.")
+    elif pwd:
+        st.error("❌ Incorrect Admin Password.")
