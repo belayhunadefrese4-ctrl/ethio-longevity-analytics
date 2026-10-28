@@ -2,8 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
-import random
-import string
+from datetime import datetime
 
 # ==========================================
 # 1. PAGE CONFIGURATION & SESSION STATE
@@ -13,12 +12,6 @@ st.set_page_config(
     page_icon="🧬",
     layout="wide"
 )
-
-if "free_used" not in st.session_state:
-    st.session_state.free_used = False
-
-if "unlocked_via_key" not in st.session_state:
-    st.session_state.unlocked_via_key = False
 
 ADMIN_PASSWORD = "ETHIO_ADMIN_2026"
 UN_BASELINE_LE = 74.0  # UN Global Life Expectancy Baseline
@@ -32,7 +25,7 @@ TRANSLATIONS = {
         "subtitle": "በተባበሩት መንግስታት (UN 74 ዓመት) እና በ AHA Life's Essential 8™ መሠረት የተዘጋጀ።",
         "tab1": "1. 15ቱ ዓለም አቀፍ የጤና መለኪያዎች",
         "tab2": "2. የባዮሎጂካል እድሜ እና የዕድሜ ጣሪያ ዳሽቦርድ",
-        "tab3": "3. የክፍያ ገጽ እና ሪፖርት ማውረጃ",
+        "tab3": "3. ክፍት የሪፖርት ማውረጃ (Free Export Center)",
         "tab4": "4. የአስተዳዳሪ መቆጣጠሪያ (Admin)",
         "p1_head": "🧬 የስነ-ሕዝብ እና የሜታቦሊክ ጤና መለኪያዎች",
         "p2_head": "🏃 የአኗኗር ዘይቤ እና የልብ-ደም ቧንቧ ልማዶች",
@@ -81,7 +74,7 @@ TRANSLATIONS = {
         "subtitle": "Clinical assessment anchored on AHA Life's Essential 8™ & WHO Global Baselines (74 Years).",
         "tab1": "1. Standardized 15-KPI Health Assessment",
         "tab2": "2. Clinical Dashboard & Narrative Briefing",
-        "tab3": "3. Remittance & Global Payments",
+        "tab3": "3. Open Access Report Center",
         "tab4": "4. Admin Console",
         "p1_head": "🧬 Demographics & Metabolic Health",
         "p2_head": "🏃 Lifestyle & Cardiovascular Behaviors",
@@ -123,14 +116,14 @@ TRANSLATIONS = {
         "gauge_title": "🎯 Biological Age vs Chronological Age",
         "bar_title": "📊 Health Category Impact Scores",
         "narrative_title": "📊 Executive Health & Longevity Narrative Briefing",
-        "btn_export": "📄 Export Certified Narrative Report (PDF)"
+        "btn_export": "📄 Export Certified Narrative Report (.txt)"
     },
     "Deutsch": {
         "title": "🌍 Globale Plattform für Langlebigkeit und Biologisches Alter",
         "subtitle": "Klinische Bewertung basierend auf AHA Life's Essential 8™ und WHO-Standards.",
         "tab1": "1. Standardisierte 15-KPI Gesundheitsbewertung",
         "tab2": "2. Klinisches Dashboard & Ausführlicher Bericht",
-        "tab3": "3. Globale Zahlungen & Freischaltung",
+        "tab3": "3. Offenes Berichts-Center",
         "tab4": "4. Admin-Konsole",
         "p1_head": "🧬 Demografie & Stoffwechselgesundheit",
         "p2_head": "🏃 Lebensstil & Herz-Kreislauf",
@@ -172,14 +165,14 @@ TRANSLATIONS = {
         "gauge_title": "🎯 Biologisches vs. Chronologisches Alter",
         "bar_title": "📊 Einflussfaktoren auf die Gesundheit",
         "narrative_title": "📊 Medizinischer Analysebericht & Zusammenfassung",
-        "btn_export": "📄 Zertifizierten Bericht Exportieren (PDF)"
+        "btn_export": "📄 Zertifizierten Bericht Exportieren (.txt)"
     },
     "Français": {
         "title": "🌍 Plateforme Mondiale de Longévité et Âge Biologique",
         "subtitle": "Évaluation clinique basée sur l'AHA Life's Essential 8™ et l'OMS.",
         "tab1": "1. Évaluation Santé à 15 KPI Normalisés",
         "tab2": "2. Tableau de Bord Clinique et Analyse Détaillée",
-        "tab3": "3. Paiements Internationaux & Transferts",
+        "tab3": "3. Centre de Rapports Libres d'Accès",
         "tab4": "4. Console d'Administration",
         "p1_head": "🧬 Démographie & Santé Métabolique",
         "p2_head": "🏃 Mode de Vie & Santé Cardiovasculaire",
@@ -221,14 +214,14 @@ TRANSLATIONS = {
         "gauge_title": "🎯 Âge biologique vs Âge chronologique",
         "bar_title": "📊 Impact des catégories de santé",
         "narrative_title": "📊 Rapport d'Analyse Médicale",
-        "btn_export": "📄 Exporter le Rapport (PDF)"
+        "btn_export": "📄 Exporter le Rapport (.txt)"
     },
     "日本語": {
         "title": "🌍 グローバル長寿＆生物学的年齢アナリティクスプラットフォーム",
         "subtitle": "米国心臓協会 (AHA) および WHO 基準に基づく臨床評価。",
         "tab1": "1. 15の標準化ヘルスKPI評価",
         "tab2": "2. 臨床ダッシュボード＆詳細レポート",
-        "tab3": "3. 国際送金・決済と認証",
+        "tab3": "3. オープンアクセス・レポートセンター",
         "tab4": "4. 管理コンソール",
         "p1_head": "🧬 人口統計と代謝の健康",
         "p2_head": "🏃 ライフスタイルと心血管行動",
@@ -270,14 +263,14 @@ TRANSLATIONS = {
         "gauge_title": "🎯 生物学的年齢 vs 暦年齢",
         "bar_title": "📊 健康カテゴリ別影響スコア",
         "narrative_title": "📊 エグゼクティブ健康評価分析レポート",
-        "btn_export": "📄 認定レポートをダウンロード (PDF)"
+        "btn_export": "📄 認定レポートをダウンロード (.txt)"
     },
     "العربية": {
         "title": "🌍 المنصة العالمية للتحليلات الطبية للعمر البيولوجي",
         "subtitle": "تقييم سريري معتمد على معايير جمعية القلب الأمريكية (AHA) ومنظمة الصحة العالمية.",
         "tab1": "1. تقييم مؤشرات الصحة الـ 15 المعتمدة",
         "tab2": "2. لوحة التحليلات السريرية والتقرير التفصيلي",
-        "tab3": "3. المدفوعات الدولية والتحويلات المالية",
+        "tab3": "3. مركز التقارير المفتوحة (Free Access)",
         "tab4": "4. لوحة التحكم والإدارة",
         "p1_head": "🧬 التركيبة السكانية والصحة الأيضية",
         "p2_head": "🏃 نمط الحياة وصحة القلب والأوعية الدموية",
@@ -319,7 +312,7 @@ TRANSLATIONS = {
         "gauge_title": "🎯 العمر البيولوجي مقارنة بالعمر الزمني",
         "bar_title": "📊 تأثير الفئات الصحية",
         "narrative_title": "📊 التقرير التحليلي الطبي السردي",
-        "btn_export": "📄 تحميل التقرير المعتمد (PDF)"
+        "btn_export": "📄 تحميل التقرير المعتمد (.txt)"
     }
 }
 
@@ -459,63 +452,21 @@ with tab2:
     st.markdown(narrative_p2)
     st.markdown(narrative_p3)
 
-    st.divider()
-
-    if st.button(T["btn_export"]):
-        st.session_state.free_used = True
-        st.success("🎉 Report ready!")
-        st.download_button(
-            "📥 Save Certified Narrative Report (.txt)",
-            data=f"{T['narrative_title']}\n\nClient: {user_name}\nChronological Age: {age}\nBiological Age: {bio_age}\nEstimated Lifespan: {est_le}\n\n{narrative_p1}\n\n{narrative_p2}\n\n{narrative_p3}",
-            file_name=f"Longevity_Clinical_Briefing_{user_name}.txt"
-        )
-
 # ==========================================
-# 5. TAB 3: REMITTANCE & PAYMENTS
+# 5. TAB 3: OPEN ACCESS REPORT CENTER
 # ==========================================
 with tab3:
     st.header(T["tab3"])
-    p1, p2 = st.columns(2)
+    st.success("✅ **Open Access Enabled:** All clinical longevity reports are 100% free and instantly downloadable for professional review.")
     
-    with p1:
-        st.subheader("💚 Global Payment & Remittance Methods")
-        curr = st.radio("Select Currency", ["ETB (ብር)", "USD ($)", "EUR (€)", "GBP (£)"])
-        
-        if curr == "ETB (ብር)":
-            amt = st.number_input("Amount (Min 20 ETB) / መጠን", min_value=20, value=200, step=10)
-        else:
-            amt = st.number_input(f"Amount (Min 3 {curr[:3]}) / መጠን", min_value=3, value=10, step=1)
-            
-        st.info(
-            "**📲 Mobile Money / International Remittance (Sendwave, Remitly, WorldRemit):**\n"
-            "* Recipient Phone: `+251986884912`\n"
-            "* Name: **Belayhun Adefrese**\n\n"
-            "**🏦 Commercial Bank of Ethiopia (CBE Direct):**\n"
-            "* Account Number: `1000296269488`\n"
-            "* Name: **Belayhun Adefrese Metaferia** (Lem Area Branch, Addis Ababa)\n\n"
-            "**📋 How to Get Your Unlock Key:**\n"
-            "1. Send funds via Sendwave, Remitly, WorldRemit, or Telebirr/CBE.\n"
-            "2. Copy the **Transaction Reference / MTCN / Confirmation Code**.\n"
-            "3. Paste the code below and submit your claim to receive your SMS Access Key."
-        )
-        
-        c_name = st.text_input("Sender Full Name")
-        c_ref = st.text_input("Transaction Ref / MTCN / Confirmation Code")
-        
-        if st.button("📩 Submit Verification Claim", type="primary"):
-            if len(c_ref.strip()) >= 5:
-                st.success(f"✅ Claim logged for {amt} {curr[:3]}! Your access key will be sent via SMS.")
-            else:
-                st.error("❌ Enter a valid transaction reference code.")
-
-    with p2:
-        st.subheader("🔑 Unlock Full Unlimited Reports")
-        key_in = st.text_input("Enter Access Key Received via SMS", type="password")
-        if st.button("Verify & Unlock Access"):
-            if key_in.strip():
-                st.session_state.unlocked_via_key = True
-                st.success("🎉 Key Verified! Full access unlocked.")
-                st.rerun()
+    st.markdown("### 📥 Instant Certified Report Download")
+    st.download_button(
+        label=T["btn_export"],
+        data=f"{T['narrative_title']}\n\nClient: {user_name}\nChronological Age: {age}\nBiological Age: {bio_age}\nEstimated Lifespan: {est_le}\n\n{narrative_p1}\n\n{narrative_p2}\n\n{narrative_p3}",
+        file_name=f"Longevity_Clinical_Briefing_{user_name}.txt",
+        mime="text/plain",
+        type="primary"
+    )
 
 # ==========================================
 # 6. TAB 4: ADMIN CONSOLE
@@ -525,9 +476,6 @@ with tab4:
     pwd = st.text_input("Admin Password", type="password")
     if pwd == ADMIN_PASSWORD:
         st.success("🔓 Authenticated as Administrator")
-        target_phone = st.text_input("Client Phone Number", "+251986884912")
-        if st.button("📲 Generate & Dispatch Key"):
-            gen_key = f"GLOB-{''.join(random.choices(string.ascii_uppercase + string.digits, k=8))}"
-            st.info(f"Generated Key: **{gen_key}** dispatched to **{target_phone}**.")
+        st.metric("System Operational Status", "Online (Open Access Mode)")
     elif pwd:
         st.error("❌ Incorrect Admin Password.")
